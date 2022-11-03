@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes, { func } from "prop-types"
+import styled from '@emotion/styled';
+import Button from '@mui/material/Button';
 import './App.css';
 
 
@@ -10,9 +12,9 @@ const PokemonRow = ({pokemon, onSelect}) => (
                     <td>{pokemon.name.japanese}</td>
                     <td> {pokemon.base.HP} </td>
                     <td>
-                      <button
+                      <Button variant="contained" color="success"
                         onClick={() => onSelect(pokemon)}
-                      >Select</button>
+                      >Select</Button>
                     </td>
                     </tr>
 )
@@ -61,41 +63,60 @@ Pokemonİnfo.propTypes ={
   }),
 }
 
+const Title = styled.h1`
+text-align: center;
+`;
+
+const TwoColumnLayout = styled.div`
+                 display: grid;
+                grid-template-columns: 80% 100%;
+                grid-column-gap: 1rem; 
+`;
+
+const Container = styled.div`
+    marign: auto;
+    width: 1000px;
+    padding-top: 1rem;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  font-size: x-large;
+  padding: 0.2rem;
+`;
 
 
-function App() {
-  const [filter, filterSet] = React.useState("")
-  const [pokemon, pokemonSet] = React.useState([])
-  const [selectedItem, selectedItemSet] =  React.useState(null)
- 
-React.useEffect(() => {
+
+class App extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      filter: "" ,
+      pokemon: [],
+      selectedItem: null,
+    }
+  }
+
+
+  componentDidMount() {
     fetch("http://localhost:3000/jackson1/pokemon.json")
-    .then((resp) => resp.json())
-    .then((data) => pokemonSet(data))
-}, [])
+       .then((resp) => resp.json())
+       .then((data) => this.setState({
+        ... this.state,
+        pokemon: data,
+       }))
+  }
 
-  return (
-    <div  style= {{
-      marign: "auto",
-      width: 800,
-      paddingTop:"1rem",
-    }}
-    >
-      <h1 className='title'>Pokemon Search</h1>
-      
-
-
-      <div style={{
-                display: 'grid',
-                gridTemplateColumns: '70% 30%',
-                gridColumnGap: '1rem' 
-                  }}
-      >
-
+  render() {
+  return(
+    <Container>
+      <Title>Pokemon Search</Title>
+      <TwoColumnLayout>
         <div>
-        < input
-      value={filter}
-      onChange={(evt) => filterSet(evt.target.value)}
+        < Input
+      value={this.state.filter}
+      onChange={(evt) => this.setState({...this.state,
+        filter: evt.target.value })}
       />
       <table width="100%">
         <thead>
@@ -104,26 +125,28 @@ React.useEffect(() => {
             <th>Type</th>
             <th>Language1</th>
             <th>Base</th>
-
           </tr>
         </thead>
         <tbody>
-          {pokemon
-          .filter((pokemon) => pokemon.name.english.toLowerCase().includes(filter.toLowerCase()))
+          {this.state.pokemon
+          .filter((pokemon) => pokemon.name.english.toLowerCase().includes(this.state.filter.toLowerCase()))
           .slice(0, 20).map(pokemon => (
-            <PokemonRow pokemon ={pokemon} key={pokemon.id} onSelect={(pokemon) => selectedItemSet(pokemon)} />
+            <PokemonRow pokemon ={pokemon} key={pokemon.id} onSelect={(pokemon) => this.setState({
+              ...this.state,
+              selectedItem: pokemon
+            })} />
           ))}
-         
         </tbody>
-        
       </table>
       </div>
-      {selectedItem && (
-        < Pokemonİnfo {...selectedItem} />
+      {this.state.selectedItem && (
+        < Pokemonİnfo {... this.state.selectedItem} />
       )}
-      </div>
-    </div>
-  );
+      </TwoColumnLayout>
+    </Container>
+  )
+  }
 }
+
 
 export default App;
