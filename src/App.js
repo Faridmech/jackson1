@@ -53,7 +53,7 @@ if(!pokemon ){
 
   return (
     <Container>
-      <Title>Pokemon Search</Title>
+      <Title>Pokemon Search1</Title>
         <TwoColumnLayout >
 
         <div>
