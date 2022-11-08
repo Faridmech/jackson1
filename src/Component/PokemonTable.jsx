@@ -1,21 +1,29 @@
 import React from "react"
+import { useContext } from "react";
+import PokemonContext from "../PokemonContex";
 import PokemonRow from "./PokemonRow";
 
-const PokemonTable = (props) => (
+const PokemonTable = () => {
+const {state: {pokemon, filter}, dispatch,} = useContext(PokemonContext)
+return (
 
 <table width="100%">
    
         <tbody>
-        {props.pokemon
-          .filter((pokemon) => pokemon.name.english.toLowerCase().includes(props.filter.toLowerCase()))
+        {pokemon
+          .filter((pokemon) => pokemon.name.english.toLowerCase().includes(filter.toLowerCase()))
           .slice(0, 20).map(pokemon => (
-            <PokemonRow pokemon ={pokemon} key={pokemon.id} onClick={(pokemon) => props.selectedPokemonSet(pokemon)} />
+            <PokemonRow pokemon ={pokemon} key={pokemon.id} onClick={(pokemon) => dispatch({
+              type: 'SET_SELECTEDPOKEMON',
+              payload: pokemon,
+            })} />
           ))}
          
         </tbody>
         
       </table>
 )
+          }
 
 export default PokemonTable;
 

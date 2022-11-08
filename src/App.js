@@ -10,6 +10,32 @@ import Pokemonİnfo from './Component/PokemonInfo';
 import PokemonFilter from './Component/PokemonFilter';
 import PokemonTable from './Component/PokemonTable';
 
+import PokemonContext from './PokemonContex';
+
+const pokemonReducer = (state, action) => {
+   switch(action.type){
+    case 'SET_FILTER':
+      return{
+        ...state,
+        filter: action.payload, 
+      };
+
+      case 'SET_POKEMON':
+      return{
+        ...state,
+        pokemon: action.payload, 
+      };
+
+      case 'SET_SELECTEDPOKEMON':
+      return{
+        ...state,
+        selectedPokemon: action.payload, 
+      };
+      default:
+        throw new Error("No action")
+   }
+}
+
 
 const Title = styled.h1`
 text-align: center;
@@ -32,40 +58,47 @@ const Container = styled.div`
 
 
 function App() {
-  const [filter, filterSet] = React.useState("")
-  const [pokemon, setPokemon] = React.useState([])
-  const [selectedPokemon, selectedPokemonSet] =  React.useState(null)
+ 
+  const [state,dispatch] = React.useReducer(pokemonReducer, {
+    pokemon: [],
+    filter: '',
+    selectedPokemon: null,
+  })
  
 React.useEffect(() => {
   (async()=>{
     const res  = await fetch("http://localhost:3000/jackson1/pokemon.json")
     const data = await res.json()
-      setPokemon(data)
+      dispatch({
+        type: "SET_POKEMON",
+        payload: data,
+      })
   })()
     
 }, [])
 
-if(!pokemon ){
+if(!state.pokemon ){
   return <div>Loading data</div>
 }
-
-
-
   return (
-    <Container>
-      <Title>Pokemon Search1</Title>
-        <TwoColumnLayout >
-
-        <div>
-        <PokemonFilter filter={filter} filterSet={filterSet} />
-        <PokemonTable filter={filter} pokemon={pokemon} selectedPokemonSet={selectedPokemonSet} />
-      
-       </div> 
-      {selectedPokemon && (
-        < Pokemonİnfo {...selectedPokemon} />
-      )}
-      </TwoColumnLayout>
-    </Container>
+    <PokemonContext.Provider
+    value={{
+      state, 
+      dispatch,
+    }}
+    >
+      <Container>
+          <Title>Pokemon Search1</Title>
+            <TwoColumnLayout >
+            <div>
+            <PokemonFilter  />
+            <PokemonTable />
+             </div> 
+          < Pokemonİnfo />
+          </TwoColumnLayout>
+      </Container>
+    </PokemonContext.Provider>
+    
   );
 }
 

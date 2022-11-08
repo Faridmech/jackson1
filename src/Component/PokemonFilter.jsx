@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from '@emotion/styled';
+import PokemonContext from "../PokemonContex";
 
 
 const Input = styled.input`
@@ -8,13 +9,19 @@ const Input = styled.input`
   padding: 0.2rem;
 `;
 
-const PokemonFilter = ({filter, filterSet}) => (
+const PokemonFilter = () => {
+  const { state: {filter}, dispatch} = useContext(PokemonContext)
+  return (
     <Input
     type="text"
       value={filter}
-      onChange={(evt) => filterSet(evt.target.value)}
+      onChange={(evt) => dispatch({
+        type: "SET_FILTER",
+        payload: evt.target.value,
+      })}
       />
 )
+  }
 
 
 export default PokemonFilter;
