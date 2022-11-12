@@ -12,7 +12,7 @@ import PokemonTable from './Component/PokemonTable';
 
 import PokemonContext from './PokemonContex';
 
-const pokemonReducer = (state, action) => {
+const pokemonReducer = (state , action) => {
    switch(action.type){
     case 'SET_FILTER':
       return{
@@ -32,7 +32,7 @@ const pokemonReducer = (state, action) => {
         selectedPokemon: action.payload, 
       };
       default:
-        throw new Error("No action")
+        return state,
    }
 }
 
